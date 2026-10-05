@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Para Yaz 💗</title>
+<style>
+/* ===== COLORES (se cambian desde el JS, sección PERSONALIZA) ===== */
+:root{--vino:#6b0010;--oscuro:#3f000a;--rosa:#f7c6d0;--rosaClaro:#ffe3e9;--crema:#fff4ea;--lila:#e6e0f3;
+--serif:"Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;--script:"Snell Roundhand","Brush Script MT","Segoe Script",cursive}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:var(--serif);color:var(--crema);background:var(--vino)}
+body{transition:background-color .6s}
+body[data-v=inicio]{background:var(--rosa);color:var(--vino)}
+body[data-v=carta],body[data-v=fotos]{background-color:var(--lila);color:var(--vino);
+ background-image:linear-gradient(90deg,rgba(110,90,160,.28) 50%,transparent 50%),linear-gradient(rgba(110,90,160,.28) 50%,transparent 50%);background-size:46px 46px}
+.marco{position:fixed;inset:6px;border:2px solid var(--rosa);border-radius:6px;pointer-events:none;z-index:50;box-shadow:inset 0 0 0 5px var(--vino)}
+.zig{position:fixed;left:0;right:0;bottom:0;height:14px;z-index:49;background:conic-gradient(from -45deg at 50% 100%,var(--oscuro) 90deg,transparent 0) 0 0/28px 14px}
+nav{position:fixed;top:0;left:0;right:0;z-index:60;background:var(--oscuro);display:flex;justify-content:center;gap:4px;padding:10px 14px 8px;overflow-x:auto;scrollbar-width:none;border-bottom:2px solid var(--rosa)}
+nav::-webkit-scrollbar{display:none}
+nav button{background:none;border:0;color:var(--rosaClaro);font:inherit;font-size:.82rem;padding:8px 11px;border-radius:20px;cursor:pointer;white-space:nowrap;transition:.25s}
+nav button:hover{background:rgba(255,255,255,.12)}
+nav button.on{background:var(--rosa);color:var(--vino);font-weight:bold}
+.view{position:absolute;inset:0;padding:70px 22px 40px;overflow-y:auto;overflow-x:hidden;opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .6s,transform .6s,visibility .6s;display:flex;flex-direction:column;align-items:center}
+.view.on{opacity:1;visibility:visible;transform:none}
+.view>*{flex-shrink:0}
+h1,h2{font-family:var(--script);font-weight:normal;text-align:center;line-height:1.1}
+h1{font-size:clamp(2.4rem,8vw,4.4rem);margin:10px 0 6px}
+h2{font-size:clamp(2rem,6vw,3.2rem);margin-bottom:12px}
+.sub{text-align:center;font-style:italic;opacity:.85;max-width:34ch;margin:4px auto 18px}
+.back{margin:26px auto 0;width:46px;height:46px;border-radius:50%;border:2px solid currentColor;background:none;color:inherit;font-size:1.4rem;cursor:pointer;transition:.25s}
+.back:hover{transform:scale(1.12) translateX(-3px)}
+/* Sobres */
+.sobre{position:relative;width:min(300px,78vw);aspect-ratio:3/2;cursor:pointer;margin:18px auto;transition:transform .3s;filter:drop-shadow(0 12px 18px rgba(0,0,0,.3))}
+.sobre:hover{transform:translateY(-6px) rotate(-1deg)}
+.sobre .cuerpo{position:absolute;inset:0;background:#8d0a1c;border-radius:6px}
+.sobre .papel{position:absolute;left:8%;right:8%;top:6%;bottom:8%;background:var(--crema);border-radius:4px;transition:transform .9s .35s}
+.sobre .frente{position:absolute;inset:0;background:linear-gradient(135deg,transparent 50%,#7a0618 50%) 0 0/50% 100% no-repeat,linear-gradient(225deg,transparent 50%,#7a0618 50%) 100% 0/50% 100% no-repeat;border-radius:6px;clip-path:polygon(0 0,50% 55%,100% 0,100% 100%,0 100%)}
+.sobre .solapa{position:absolute;left:0;right:0;top:0;height:58%;background:#a31226;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .7s,z-index 0s .35s;z-index:3}
+.sobre .sello{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d34a5e,#8a1022);z-index:4;display:grid;place-items:center;font-size:1.2rem;box-shadow:0 2px 6px rgba(0,0,0,.4);transition:opacity .3s}
+.sobre.open .solapa{transform:rotateX(180deg);z-index:1}
+.sobre.open .sello{opacity:0}
+.sobre.open .papel{transform:translateY(-38%)}
+.pista{font-size:.85rem;letter-spacing:.12em;text-align:center;opacity:.9;animation:lat 1.8s infinite}
+@keyframes lat{50%{opacity:.4}}
+/* Elegir sorpresa */
+.opciones{display:flex;flex-wrap:wrap;justify-content:center;gap:22px 34px;margin-top:6px;width:100%}
+.op{width:150px;background:none;border:0;color:inherit;font:inherit;cursor:pointer;text-align:center;transition:transform .35s}
+.op:hover,.op:focus-visible{transform:translateY(-10px) scale(1.06);outline:0}
+.op svg{width:130px;height:130px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))}
+.op b{display:block;margin-top:8px;font-size:1.05rem;letter-spacing:.14em;text-transform:uppercase}
+.op small{display:block;font-style:italic;opacity:.8;margin-top:2px;font-size:.85rem}
+.frase{margin-top:26px;background:rgba(255,255,255,.1);border:1px dashed var(--rosa);border-radius:14px;padding:12px 18px;max-width:420px;text-align:center;font-style:italic;cursor:pointer}
+/* Carta */
+#hoja{position:fixed;inset:60px 0 20px;z-index:70;display:grid;place-items:center;padding:14px;background:rgba(63,0,10,.55);opacity:0;visibility:hidden;transition:.5s}
+#hoja.on{opacity:1;visibility:visible}
+.pliego{width:min(560px,100%);max-height:100%;overflow-y:auto;background:var(--crema);color:#4a1018;border-radius:8px;padding:26px 24px 20px;transform:translateY(40px) scale(.94);transition:transform .7s;background-image:repeating-linear-gradient(transparent 0 31px,rgba(150,60,80,.12) 31px 32px);line-height:32px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+#hoja.on .pliego{transform:none}
+.pliego h2{color:var(--vino);line-height:1.2}
+.pliego p{opacity:0;transform:translateY(10px);transition:opacity 1s,transform 1s;margin-bottom:32px;font-size:1.02rem}
+.pliego p.v{opacity:1;transform:none}
+.pliego .firma{text-align:right;font-family:var(--script);font-size:1.6rem}
+.cerrar{display:block;margin:6px auto 0;background:var(--vino);color:var(--crema);border:0;border-radius:20px;padding:8px 20px;font:inherit;cursor:pointer;line-height:1.3}
+/* Fotos */
+.polas{display:flex;flex-wrap:wrap;justify-content:center;gap:26px 22px;width:100%;max-width:900px;padding:8px 0}
+.pola{width:min(220px,44vw);background:#fff;padding:10px 10px 36px;box-shadow:0 8px 18px rgba(60,0,10,.3);cursor:pointer;transition:transform .35s,box-shadow .35s;position:relative;border:0;opacity:0;animation:ap .7s forwards}
+.pola:nth-child(odd){transform:rotate(-3deg)}.pola:nth-child(even){transform:rotate(2.5deg)}.pola:nth-child(3n){transform:rotate(-1deg)}
+.pola:hover{transform:rotate(0) scale(1.07) translateY(-6px);box-shadow:0 16px 28px rgba(60,0,10,.4);z-index:2}
+.pola img,.pola .vacia{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--rosaClaro)}
+.pola .vacia{display:grid;place-items:center;text-align:center;font-size:.8rem;color:var(--vino);padding:8px}
+.pola i{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:var(--script);font-size:1.1rem;color:var(--vino)}
+.pola::before{content:"";position:absolute;top:-10px;left:50%;width:56px;height:20px;margin-left:-28px;background:rgba(247,198,208,.8);transform:rotate(-3deg)}
+@keyframes ap{to{opacity:1}}
+.ester{margin-top:22px;background:var(--vino);color:var(--crema);border:0;border-radius:20px;padding:9px 18px;font:inherit;cursor:pointer;transition:.25s}
+.ester:hover{transform:scale(1.06)}
+#lb{position:fixed;inset:0;z-index:90;background:rgba(30,0,6,.9);display:grid;place-items:center;opacity:0;visibility:hidden;transition:.35s;padding:20px}
+#lb.on{opacity:1;visibility:visible}
+#lb img{max-width:100%;max-height:82vh;border:10px solid #fff;border-bottom-width:30px;border-radius:3px;box-shadow:0 10px 40px #000}
+#lb button{position:absolute;background:var(--rosa);color:var(--vino);border:0;border-radius:50%;width:44px;height:44px;font-size:1.3rem;cursor:pointer}
+#lbx{top:max(16px,env(safe-area-inset-top));right:16px}#lbp{left:12px;top:50%}#lbn{right:12px;top:50%}
+/* Flores */
+.ramo{width:min(260px,64vw);margin:4px auto;animation:crece 1.4s both;transform-origin:bottom;filter:drop-shadow(0 10px 12px rgba(0,0,0,.35))}
+@keyframes crece{from{transform:scale(.3) translateY(60px);opacity:0}}
+.notas{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:560px;margin-top:10px}
+.nota{background:#e4dcf4;color:var(--vino);border-radius:12px;padding:10px 16px;font-size:.95rem;box-shadow:0 4px 10px rgba(0,0,0,.3);opacity:0;animation:ap .8s forwards}
+.mensaje{font-family:var(--script);font-size:clamp(1.5rem,4.6vw,2rem);text-align:center;max-width:30ch;margin-top:18px;opacity:0;animation:ap 1.2s 1.6s forwards}
+.petalo{position:fixed;top:-30px;width:14px;height:18px;border-radius:70% 0 70% 0;background:var(--rosa);z-index:40;pointer-events:none;animation:cae linear forwards}
+@keyframes cae{to{transform:translate(var(--dx),110vh) rotate(540deg)}}
+/* Pastel */
+.pastel{width:min(300px,76vw);margin-top:10px;filter:drop-shadow(0 12px 14px rgba(0,0,0,.4))}
+.llama{cursor:pointer;transform-origin:center bottom;transition:opacity .4s,transform .4s;animation:fl .5s infinite alternate}
+.llama.off{opacity:0;transform:scale(.2);pointer-events:none;animation:none}
+@keyframes fl{to{transform:scale(1.1,.94) rotate(3deg)}}
+#conf{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:80}
+/* Música */
+#disco{position:fixed;right:18px;bottom:26px;z-index:65;width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;background:radial-gradient(circle,var(--rosa) 0 22%,#d94a63 23% 30%,#1b0006 31%);box-shadow:0 4px 12px rgba(0,0,0,.5);color:var(--oscuro);font-size:.9rem}
+#disco.on{animation:giro 3s linear infinite}
+@keyframes giro{to{transform:rotate(360deg)}}
+#toast{position:fixed;left:50%;bottom:60px;transform:translate(-50%,20px);background:var(--oscuro);color:var(--crema);padding:10px 18px;border-radius:20px;z-index:100;opacity:0;transition:.4s;max-width:88vw;text-align:center;font-size:.9rem}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.cor{position:fixed;bottom:-30px;z-index:1;pointer-events:none;animation:sube linear forwards;opacity:.7}
+@keyframes sube{to{transform:translateY(-110vh) rotate(25deg)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body data-v="inicio">
+<div class="marco"></div><div class="zig"></div>
+
+<nav id="nav">
+ <button data-go="inicio">Inicio</button><button data-go="sorpresa">Tu sorpresa</button><button data-go="carta">Carta</button>
+ <button data-go="fotos">Fotos</button><button data-go="flores">Flores</button><button data-go="pastel">Pastel</button>
+</nav>
+
+<!-- INICIO -->
+<section class="view" id="v-inicio">
+ <h1 id="tituloInicio"></h1>
+ <p class="sub" id="subInicio"></p>
+ <div class="sobre" id="sobreInicio" tabindex="0" role="button" aria-label="Abrir sorpresa"><div class="cuerpo"></div><div class="frente"></div><div class="solapa"></div><div class="sello">💗</div></div>
+ <p class="pista">TOCA EL SOBRE</p>
+</section>
+
+<!-- ELEGIR SORPRESA -->
+<section class="view" id="v-sorpresa">
+ <h1 id="tituloElige"></h1>
+ <div class="opciones">
+  <button class="op" data-go="carta"><svg viewBox="0 0 120 120"><rect x="8" y="26" width="104" height="70" rx="6" fill="#fde4e6"/><path d="M8 30l52 38 52-38" fill="none" stroke="#d9a0a8" stroke-width="3"/><path d="M60 56c-9-10-24 2-12 14l12 11 12-11c12-12-3-24-12-14z" fill="#b8431f"/></svg><b>Carta</b><small>Una carta para ti</small></button>
+  <button class="op" data-go="flores"><svg viewBox="0 0 120 120"><path d="M60 112L34 52h52z" fill="#e9d9f2"/><path d="M60 112L46 56h28z" fill="#cdb6e2"/><g stroke="#4f8a4a" stroke-width="3"><path d="M60 60V40M50 58L38 36M70 58l12-22"/></g><circle cx="60" cy="30" r="14" fill="#f4a3b5"/><circle cx="38" cy="32" r="12" fill="#ffc9a8"/><circle cx="82" cy="32" r="12" fill="#f7c6d0"/><circle cx="60" cy="30" r="5" fill="#fff4c4"/><path d="M48 92c12 8 12 8 24 0" stroke="#f08aa5" stroke-width="5" fill="none"/></svg><b>Flores</b><small>Un pequeño detalle</small></button>
+  <button class="op" data-go="pastel"><svg viewBox="0 0 120 120"><ellipse cx="60" cy="100" rx="50" ry="8" fill="#e8cfd3"/><path d="M20 62h80v36a40 8 0 0 1-80 0z" fill="#fde1e6"/><path d="M20 62q10 14 20 0t20 0 20 0 20 0v-6a40 12 0 0 0-80 0z" fill="#fff"/><circle cx="60" cy="42" r="9" fill="#c4122e"/><circle cx="40" cy="50" r="7" fill="#c4122e"/><circle cx="80" cy="50" r="7" fill="#c4122e"/><path d="M60 33q4-10 12-12" stroke="#4f8a4a" stroke-width="2" fill="none"/></svg><b>Pastel</b><small>Porque hoy se celebra</small></button>
+ </div>
+ <div class="frase" id="fraseInterna" title="Toca para otra frase"></div>
+</section>
+
+<!-- CARTA -->
+<section class="view" id="v-carta">
+ <h2>Una carta para ti</h2>
+ <div class="sobre" id="sobreCarta" tabindex="0" role="button" aria-label="Abrir carta"><div class="cuerpo"></div><div class="papel"></div><div class="frente"></div><div class="solapa"></div><div class="sello">💌</div></div>
+ <p class="pista">HAZ CLIC EN LA CARTA</p>
+ <button class="back" data-go="sorpresa" aria-label="Volver">←</button>
+</section>
+<div id="hoja"><div class="pliego" id="pliego"></div></div>
+
+<!-- FOTOS -->
+<section class="view" id="v-fotos">
+ <h2>Nuestros momentos</h2>
+ <div class="polas" id="polas"></div>
+ <button class="ester" id="btnRecuerdo">💗 Toca para un recuerdo</button>
+ <button class="back" data-go="sorpresa" aria-label="Volver">←</button>
+</section>
+<div id="lb"><button id="lbx" aria-label="Cerrar">✕</button><button id="lbp" aria-label="Anterior">‹</button><img id="lbi" alt="Yaz"><button id="lbn" aria-label="Siguiente">›</button></div>
+
+<!-- FLORES -->
+<section class="view" id="v-flores">
+ <h2>Un pequeño detalle</h2>
+ <div id="ramoBox"></div>
+ <div class="notas" id="notas"></div>
+ <p class="mensaje" id="msgFlores"></p>
+ <button class="back" data-go="sorpresa" aria-label="Volver">←</button>
+</section>
+
+<!-- PASTEL -->
+<section class="view" id="v-pastel">
+ <h2 id="tPastel">Porque hoy se celebra</h2>
+ <svg class="pastel" viewBox="0 0 300 280" id="pastelSvg">
+  <ellipse cx="150" cy="250" rx="140" ry="20" fill="#e8cfd3"/>
+  <path d="M40 150h220v90a110 18 0 0 1-220 0z" fill="#f7c6d0"/>
+  <path d="M60 100h180v50H60z" fill="#ffe3e9"/>
+  <path d="M40 150q18 22 36 0t36 0 36 0 36 0 36 0v-10H40z" fill="#fff"/>
+  <path d="M60 100q15 18 30 0t30 0 30 0 30 0 30 0v-8H60z" fill="#fff"/>
+  <ellipse cx="150" cy="96" rx="90" ry="14" fill="#fff"/>
+  <g fill="#c4122e"><circle cx="90" cy="138" r="8"/><circle cx="150" cy="142" r="8"/><circle cx="210" cy="138" r="8"/></g>
+  <g id="velas"></g>
+ </svg>
+ <p class="mensaje" id="msgPastel" style="animation:none;opacity:1;min-height:3.2em">Toca las llamitas para apagar las velas 🕯️</p>
+ <button class="ester" id="reencender">Volver a encenderlas</button>
+ <button class="back" data-go="sorpresa" aria-label="Volver">←</button>
+</section>
+
+<button id="disco" aria-label="Música" title="Música">♪</button>
+<canvas id="conf"></canvas>
+<div id="toast"></div>
+
+<script>
+// ==========================================
+// ✨ PERSONALIZA AQUÍ TU REGALO PARA YAZ ✨
+// ==========================================
+const nombre = "Mi Yaz";                 // Nombre de tu amiga
+const firma  = "Day";      // Cómo firmas la carta
+const fechaCumple = "5 de octubre";               // Ej: "15 de octubre" (déjalo vacío si no quieres mostrarla)
+
+// ===============================
+// FOTOS DE YAZ - CAMBIAR AQUÍ
+// ===============================
+// Pon tus fotos dentro de la carpeta "fotos/". Puedes agregar o quitar líneas.
+const fotosYaz = [
+  "yaz1.png",   // ← CAMBIAR POR FOTO DE YAZ
+  "yaz 2.png",   // ← CAMBIAR POR FOTO DE YAZ
+  "yaz 3.png",   // ← CAMBIAR POR FOTO DE YAZ
+  "yaz4.png"    // ← CAMBIAR POR FOTO DE YAZ
+];
+// Text que aparece abajo de cada polaroid (opcional, en el mismo orden que las fotos)
+const pies = ["TE AMOO", "CON TODO", "MI", "CORAZONN"];
+
+// Canción (opcional). Pon tu propio archivo en audio/cancion.mp3. Déjalo "" si no quieres música.
+const musica = "cancion.mp3";
+
+// Colores
+const colores = { vino:"#6b0010", oscuro:"#3f000a", rosa:"#f7c6d0", rosaClaro:"#ffe3e9", crema:"#fff4ea" };
+
+// Recuerdos (salen al tocar el botón en la sección de Fotos)
+const recuerdos = [
+  "RECUERDO 1 - Cuando recien nos conocimosss",
+  "RECUERDO 2 - Cuando estabamos afuera de la escuela y estabamos aburridass",
+  "RECUERDO 3 - Cuando casi te peleabas con tu mejor ammigaaa"
+];
+
+// Frases internas (cambian al tocar la frase en "Tu sorpresa")
+const frases = [
+  "Para mi persona favorita.",
+  "Gracias por aguantarme desde la prepa.",
+  "Sobrevivimos a la prepa y todavía seguimos siendo amigas.",
+  "Eso ya demuestra que nuestra amistad es indestructible. 😂",
+  "E AMOOOOO"
+];
+
+// Carta: cada línea es un párrafo. Edita lo que quieras.
+const carta = [
+  "Hoy es tu día y no quería dejarlo pasar con un simple mensaje de WhatsApp.",
+  "Sobrevivimos a la prepa y todavía seguimos siendo amigas. Eso ya demuestra que nuestra amistad es indestructible. Gracias por aguantarme desde entonces: las risas que no podíamos controlar, las tonterías que jamás vamos a contarle a nadie y todo lo que hemos vivido juntas.",
+  "Hemos pasado por tantas cosas que ya perdí la cuenta: los días buenos, los pésimos, los de “no quiero hablar” que terminaron en tres horas de plática. Sí, a veces nos enojamos (tú más, no te ofendas), pero siempre, siempre, seguimos ahí la una para la otra.",
+  "Eres divertida, sarcástica, un poquito enojona, medio loca y, aun así, la persona más responsable y cariñosa que conozco. Es una combinación rarísima, y por eso eres tú. Contigo no tengo que fingir nada, y eso vale más de lo que puedo escribir aquí.",
+  "No sé si te lo digo suficiente: eres muy importante para mí. Gracias por estar en mis momentos difíciles y por hacer que los buenos sean todavía mejores.",
+  "Deseo que cumplas muchísimos años más, y que yo esté en cada uno de ellos molestándote. Quiero seguir viviendo momentos contigo: los planes, los desastres, las risas y las pláticas de siempre.",
+  "Feliz cumpleaños, Yaz. Te quiero muchísimo. 💗"
+];
+
+// Flores: notitas y mensaje final
+const notasFlores = ["Para mi persona favorita", "Mereces todas las flores del mundo", "Hechas con cariño, solo para ti", "Sí, también para la enojona 😌"];
+const mensajeFlores = "Porque una amiga como tú merece flores todos los días, no solamente en su cumpleaños.";
+
+// Pastel
+const textoDeseo = ["Pide un deseo, " + nombre + ". 🎂✨", "Espero que todos tus deseos se hagan realidad."];
+// ==========================================
+// FIN DE LA PERSONALIZACIÓN (no hace falta tocar nada más)
+// ==========================================
+
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+Object.entries(colores).forEach(([k, v]) => document.documentElement.style.setProperty("--" + k, v));
+
+/* Textos con el nombre */
+$("#tituloInicio").textContent = "¡Feliz cumpleaños, " + nombre + "!";
+$("#subInicio").textContent = fechaCumple ? "Hoy, " + fechaCumple + ", se celebra a la mejor." : "Hay algo esperándote dentro del sobre.";
+$("#tituloElige").textContent = "Elige tu sorpresa, " + nombre + " 💗";
+document.title = "Para " + nombre + " 💗";
+
+/* Navegación entre secciones */
+let actual = "inicio";
+function ir(id) {
+  if (!$("#v-" + id)) return;
+  cerrarHoja(); cerrarLb();
+  $$(".view").forEach(v => v.classList.toggle("on", v.id === "v-" + id));
+  $$("#nav button").forEach(b => b.classList.toggle("on", b.dataset.go === id));
+  document.body.dataset.v = id; actual = id;
+  $("#v-" + id).scrollTop = 0;
+  if (id === "flores") abrirFlores();
+  if (id === "pastel") prepararPastel();
+  if (id === "fotos") pintarFotos();
+  if (id === "sorpresa") otraFrase(true);
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if (b) ir(b.dataset.go); });
+function toast(t) { const el = $("#toast"); el.textContent = t; el.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("on"), 3400); }
+function activar(el, fn) { el.addEventListener("click", fn); el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fn(); } }); }
+
+/* Inicio: sobre con sello */
+activar($("#sobreInicio"), () => { $("#sobreInicio").classList.add("open"); setTimeout(() => { ir("sorpresa"); $("#sobreInicio").classList.remove("open"); }, 1100); });
+
+/* Frases internas */
+let fi = 0;
+function otraFrase(reset) { if (!reset) fi = (fi + 1) % frases.length; else fi = Math.floor(Math.random() * frases.length); $("#fraseInterna").textContent = "“" + frases[fi] + "”"; }
+$("#fraseInterna").addEventListener("click", () => otraFrase());
+
+/* Carta */
+const pliego = $("#pliego");
+pliego.innerHTML = '<h2>Para ti, ' + nombre + '</h2>' + carta.map((t, i) => '<p' + (i === carta.length - 1 ? ' class="firma"' : '') + '></p>').join("") + '<button class="cerrar" id="cerrarCarta">Cerrar carta</button>';
+$$("#pliego p").forEach((p, i) => p.textContent = carta[i]);
+const firmaP = document.createElement("p"); firmaP.className = "firma"; firmaP.textContent = "— " + firma; pliego.insertBefore(firmaP, $("#cerrarCarta"));
+let tmrs = [];
+activar($("#sobreCarta"), () => {
+  const s = $("#sobreCarta"); if (s.classList.contains("open")) return;
+  s.classList.add("open");
+  setTimeout(() => {
+    $("#hoja").classList.add("on");
+    $$("#pliego p").forEach((p, i) => tmrs.push(setTimeout(() => p.classList.add("v"), 700 + i * 1500)));
+  }, 1400);
+});
+function cerrarHoja() { tmrs.forEach(clearTimeout); tmrs = []; $("#hoja").classList.remove("on"); $$("#pliego p").forEach(p => p.classList.remove("v")); $("#sobreCarta").classList.remove("open"); }
+$("#cerrarCarta").addEventListener("click", cerrarHoja);
+
+/* Fotos y lightbox */
+let fotosPintadas = false, idx = 0;
+function pintarFotos() {
+  if (fotosPintadas) return; fotosPintadas = true;
+  const cont = $("#polas");
+  fotosYaz.forEach((src, i) => {
+    const b = document.createElement("button"); b.className = "pola"; b.style.animationDelay = (i * 0.15) + "s"; b.setAttribute("aria-label", "Ampliar foto " + (i + 1));
+    const img = new Image(); img.src = src; img.alt = nombre; img.loading = "lazy";
+    img.onerror = () => { const v = document.createElement("div"); v.className = "vacia"; v.textContent = "Pon aquí tu foto: " + src; img.replaceWith(v); b.dataset.vacia = 1; };
+    const cap = document.createElement("i"); cap.textContent = pies[i] || "";
+    b.append(img, cap); b.addEventListener("click", () => abrirLb(i)); cont.append(b);
+  });
+}
+function abrirLb(i) { if ($$(".pola")[i].dataset.vacia) { toast("Aún no hay foto: cambia " + fotosYaz[i] + " por la tuya 💗"); return; } idx = i; $("#lbi").src = fotosYaz[i]; $("#lb").classList.add("on"); }
+function cerrarLb() { $("#lb").classList.remove("on"); }
+function mover(d) { let n = idx; for (let k = 0; k < fotosYaz.length; k++) { n = (n + d + fotosYaz.length) % fotosYaz.length; if (!$$(".pola")[n].dataset.vacia) { idx = n; $("#lbi").src = fotosYaz[n]; return; } } }
+$("#lbx").onclick = cerrarLb; $("#lbp").onclick = () => mover(-1); $("#lbn").onclick = () => mover(1);
+$("#lb").addEventListener("click", e => { if (e.target.id === "lb") cerrarLb(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { cerrarLb(); cerrarHoja(); } if ($("#lb").classList.contains("on")) { if (e.key === "ArrowLeft") mover(-1); if (e.key === "ArrowRight") mover(1); } });
+let ri = 0;
+$("#btnRecuerdo").addEventListener("click", () => { toast(recuerdos[ri % recuerdos.length]); ri++; corazones(8); });
+
+/* Flores */
+const flor = (cx, cy, r, c1, c2) => '<g transform="translate(' + cx + ' ' + cy + ')">' + [0, 60, 120, 180, 240, 300].map(a => '<ellipse cx="0" cy="' + (-r * .62) + '" rx="' + (r * .42) + '" ry="' + (r * .7) + '" fill="' + c1 + '" transform="rotate(' + a + ')"/>').join("") + '<circle r="' + (r * .3) + '" fill="' + c2 + '"/></g>';
+$("#ramoBox").innerHTML = '<svg class="ramo" viewBox="0 0 220 280"><g stroke="#5a9650" stroke-width="4" fill="none" stroke-linecap="round"><path d="M110 250V120M100 240L58 100M120 240l44-142M96 240L30 140M124 240l66-100"/></g><ellipse cx="70" cy="190" rx="14" ry="30" fill="#7fb577" transform="rotate(-50 70 190)"/><ellipse cx="150" cy="190" rx="14" ry="30" fill="#7fb577" transform="rotate(50 150 190)"/><path d="M110 270L52 160h116z" fill="#e9d9f2"/><path d="M110 270L84 164h52z" fill="#cdb6e2"/>' +
+  flor(110, 96, 38, "#f4a3b5", "#fff1b8") + flor(58, 90, 30, "#ffc9a8", "#fff1b8") + flor(164, 86, 30, "#f7c6d0", "#fff1b8") + flor(32, 140, 24, "#f9d7e0", "#f4a3b5") + flor(190, 138, 24, "#e9c3f0", "#fff1b8") + '<path d="M80 168c20 14 40 14 60 0l-8 12c-14 8-30 8-44 0z" fill="#f08aa5"/></svg>';
+$("#notas").innerHTML = notasFlores.map((t, i) => '<div class="nota" style="animation-delay:' + (.9 + i * .5) + 's">' + t + '</div>').join("");
+$("#msgFlores").textContent = mensajeFlores;
+function abrirFlores() {
+  const box = $("#ramoBox"), c = box.innerHTML; box.innerHTML = c; // reinicia la animación
+  $$("#notas .nota, #msgFlores").forEach(n => { n.style.animation = "none"; void n.offsetWidth; n.style.animation = ""; });
+  for (let i = 0; i < 22; i++) { const p = document.createElement("div"); p.className = "petalo"; p.style.left = Math.random() * 100 + "vw"; p.style.setProperty("--dx", (Math.random() * 120 - 60) + "px"); p.style.animationDuration = (5 + Math.random() * 4) + "s"; p.style.animationDelay = (Math.random() * 3) + "s"; p.style.opacity = .6 + Math.random() * .4; document.body.append(p); setTimeout(() => p.remove(), 12500); }
+}
+
+/* Pastel */
+let apagadas = 0; const N = 3;
+function prepararPastel() {
+  apagadas = 0; $("#msgPastel").textContent = "Toca las llamitas para apagar las velas 🕯️";
+  $("#velas").innerHTML = [95, 150, 205].map((x, i) => '<g><rect x="' + (x - 5) + '" y="52" width="10" height="42" rx="3" fill="' + ["#c4122e", "#ffffff", "#c4122e"][i] + '" stroke="#f7c6d0"/><g class="llama" data-i="' + i + '"><ellipse cx="' + x + '" cy="40" rx="7" ry="12" fill="#ffb300"/><ellipse cx="' + x + '" cy="43" rx="3.5" ry="7" fill="#fff3a0"/><rect x="' + (x - 14) + '" y="18" width="28" height="40" fill="transparent"/></g></g>').join("");
+  $$(".llama").forEach(l => l.addEventListener("click", () => { if (l.classList.contains("off")) return; l.classList.add("off"); if (++apagadas === N) celebrar(); }));
+}
+function celebrar() {
+  confeti(); const m = $("#msgPastel"); m.textContent = textoDeseo[0];
+  setTimeout(() => { m.textContent = textoDeseo[1]; }, 3200);
+}
+$("#reencender").addEventListener("click", prepararPastel);
+
+/* Confeti (canvas) */
+const cv = $("#conf"), cx = cv.getContext("2d"); let parts = [], corriendo = false;
+function ajustar() { cv.width = innerWidth; cv.height = innerHeight; } addEventListener("resize", ajustar); ajustar();
+function confeti() {
+  const cols = [colores.rosa, colores.vino, "#fff", "#ffd1dc", "#e6e0f3", "#ffcf99"];
+  for (let i = 0; i < 160; i++) parts.push({ x: innerWidth / 2 + (Math.random() - .5) * 120, y: innerHeight * .5, vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4, s: 5 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - .5) * .3, c: cols[i % cols.length], t: 0 });
+  if (!corriendo) { corriendo = true; requestAnimationFrame(paso); }
+}
+function paso() {
+  cx.clearRect(0, 0, cv.width, cv.height);
+  parts.forEach(p => { p.vy += .25; p.x += p.vx; p.y += p.vy; p.vx *= .99; p.r += p.vr; p.t++; cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c; cx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); cx.restore(); });
+  parts = parts.filter(p => p.y < cv.height + 20 && p.t < 260);
+  if (parts.length) requestAnimationFrame(paso); else { corriendo = false; cx.clearRect(0, 0, cv.width, cv.height); }
+}
+
+/* Corazoncitos flotantes */
+function corazones(n) { for (let i = 0; i < n; i++) { const h = document.createElement("div"); h.className = "cor"; h.textContent = ["💗", "💖", "✨"][i % 3]; h.style.left = Math.random() * 95 + "vw"; h.style.fontSize = 16 + Math.random() * 18 + "px"; h.style.animationDuration = 3 + Math.random() * 3 + "s"; h.style.animationDelay = Math.random() * .8 + "s"; document.body.append(h); setTimeout(() => h.remove(), 7000); } }
+
+/* Música: botón del disco (nunca arranca sola) */
+const disco = $("#disco"); let audio = null;
+if (!musica) disco.style.display = "none";
+disco.addEventListener("click", () => {
+  if (!audio) { audio = new Audio(musica); audio.loop = true; audio.addEventListener("error", () => { disco.classList.remove("on"); toast("Pon tu canción en " + musica + " para que suene 🎶"); audio = null; }); }
+  if (audio.paused) { audio.play().then(() => disco.classList.add("on")).catch(() => { disco.classList.remove("on"); toast("Pon tu canción en " + musica + " para que suene 🎶"); }); }
+  else { audio.pause(); disco.classList.remove("on"); }
+});
+
+ir("inicio");
+</script>
+</body>
+</html>
